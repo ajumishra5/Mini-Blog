@@ -1,0 +1,16 @@
+{% extends 'blog/base.html' %}
+
+{% block content %}
+<h2 class="mb-4">Latest Posts</h2>
+
+{% for post in posts %}
+<div class="card mb-3 shadow-sm">
+  <div class="card-body">
+    <h4>{{ post.title }}</h4>
+    <p>{{ post.content }}</p>
+    <small class="text-muted">By {{ post.author }} | {{ post.created_at }}</small>
+  </div>
+</div>
+{% endfor %}
+
+{% endblock %}
