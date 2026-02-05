@@ -1,0 +1,20 @@
+{% extends 'blog/base.html' %}
+
+{% block content %}
+<div class="card shadow-sm">
+  <div class="card-body">
+    <h2>{{ post.title }}</h2>
+    
+    {% if request.user == post.author %}
+       <a href="{% url 'edit_post' post.pk %}" class="btn btn-warning btn-sm mt-3">✏️ Edit</a>
+       <a href="{% url 'delete_post' post.pk %}" class="btn btn-danger btn-sm mt-3">🗑️ Delete</a>
+    {% endif %}
+    
+
+
+    <p class="text-muted">By {{ post.author.username }} | {{ post.created_at|date:"M d, Y" }}</p>
+    <hr>
+    <p>{{ post.content }}</p>
+  </div>
+</div>
+{% endblock %}
