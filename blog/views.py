@@ -4,7 +4,7 @@ from .forms import PostForm, CommentForm, SignUpForm
 from django.core.paginator import Paginator
 from django.contrib.auth.models import User
 from django.contrib.auth import login
-from django.http import JsonResponse
+from django.http import HttpResponse, JsonResponse
 from django.contrib import messages
 from .models import Like, Post
 
@@ -146,3 +146,10 @@ def profile_view(request, username):
     posts = paginator.get_page(page_number)  # Get posts for the current page
 
     return render(request, "blog/profile.html", {"profile_user": user, "posts": posts})
+
+
+def create_admin(request):
+    if not User.objects.filter(username="admin").exists():
+        User.objects.create_superuser('admin', 'admin@example.com', 'admin123')
+        return HttpResponse("Superuser created")
+    return HttpResponse("Superuser already exists")
