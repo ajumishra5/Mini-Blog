@@ -1,15 +1,26 @@
 from django.shortcuts import render, get_object_or_404, redirect
 from django.contrib.auth.decorators import login_required
+from .forms import PostForm, CommentForm, SignUpForm
+from django.core.paginator import Paginator
+from django.contrib.auth.models import User
 from django.contrib.auth import login
 from django.http import JsonResponse
 from django.contrib import messages
-from .forms import PostForm, CommentForm, SignUpForm
 from .models import Like, Post
 
 
 
+# def post_list(request):
+#     posts = Post.objects.all().order_by('-created_at')
+#     return render(request, 'blog/post_list.html', {'posts': posts})
+
 def post_list(request):
-    posts = Post.objects.all().order_by('-created_at')
+    post_list = Post.objects.all().order_by('-created_at')
+    paginator = Paginator(post_list, 5)  # 5 posts per page
+
+    page_number = request.GET.get('page')
+    posts = paginator.get_page(page_number)
+
     return render(request, 'blog/post_list.html', {'posts': posts})
 
 def create_post(request):
@@ -85,7 +96,7 @@ def post_detail(request, pk):
         'form': form
     })
 
-
+# AJAX view for toggling like/unlike
 @login_required
 def toggle_like(request, pk):
     post = get_object_or_404(Post, pk=pk)
@@ -102,23 +113,7 @@ def toggle_like(request, pk):
         'likes_count': post.likes.count()
     })
 
-@login_required
-def toggle_like(request, pk):
-    post = get_object_or_404(Post, pk=pk)
-    like, created = Like.objects.get_or_create(post=post, user=request.user)
-
-    if not created:
-        like.delete()
-        liked = False
-    else:
-        liked = True
-
-    return JsonResponse({
-        'liked': liked,
-        'likes_count': post.likes.count()
-    })
-
-
+# User signup view
 def signup_view(request):
     if request.method == 'POST':
         form = SignUpForm(request.POST)
@@ -130,3 +125,26 @@ def signup_view(request):
         form = SignUpForm()
 
     return render(request, 'registration/signup.html', {'form': form})
+
+# User profile view
+# def profile_view(request, username):
+#     user = get_object_or_404(User, username=username)
+#     posts = user.posts.all().order_by('-created_at')
+
+#     return render(request, 'blog/profile.html', {
+#         'profile_user': user,
+#         'posts': posts
+#     })
+
+def profile_view(request, username):
+    user = get_object_or_404(User, username=username)
+    post_list = user.posts.all().order_by('-created_at')
+
+    paginator = Paginator(post_list, 5)  # 5 posts per page
+    page_number = request.GET.get('page')
+    posts = paginator.get_page(page_number)
+
+    return render(request, 'blog/profile.html', {
+        'profile_user': user,
+        'posts': posts
+    })
