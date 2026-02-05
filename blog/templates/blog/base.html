@@ -37,15 +37,35 @@
   <div class="container d-flex justify-content-between">
     <a class="navbar-brand" href="/">Mini Blog</a>
     <div>
-      <a href="/create/" class="btn btn-outline-light btn-sm me-2">+ New Post</a>
-      <button id="theme-toggle" class="btn btn-outline-light btn-sm">🌙 Dark</button>
-    </div>
+       {% if user.is_authenticated %}
+           <span class="text-light me-2">Hi, {{ user.username }}</span>
+           <form method="post" action="{% url 'logout' %}" class="d-inline">
+           {% csrf_token %}
+            <button type="submit" class="btn btn-outline-light btn-sm me-2">Logout</button>
+              </form>
+           <a href="{% url 'create_post' %}" class="btn btn-warning btn-sm">+ New Post</a>
+       {% else %}
+           <a href="{% url 'login' %}" class="btn btn-outline-light btn-sm">Login</a>
+       {% endif %}
+          <button id="theme-toggle" class="btn btn-outline-light btn-sm ms-2">🌙 Dark</button>
+   </div>
   </div>
 </nav>
 
+<div class="container py-4 px-3 px-md-5">
+
+  <div class="container mt-3">
+  {% if messages %}
+    {% for message in messages %}
+      <div class="alert alert-{{ message.tags }} alert-dismissible fade show" role="alert">
+        {{ message }}
+        <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+      </div>
+    {% endfor %}
+  {% endif %}
+</div>
 
 
-<div class="container mt-4">
     {% block content %}{% endblock %}
 </div>
 
