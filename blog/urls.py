@@ -21,5 +21,4 @@ urlpatterns = [
     path("post/<int:pk>/like/", toggle_like, name="toggle_like"),
     path("signup/", signup_view, name="signup"),
     path("profile/<str:username>/", profile_view, name="profile"),
-    path("create-admin/", create_admin, name="create_admin"),
 ]
